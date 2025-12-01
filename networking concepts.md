@@ -7,35 +7,26 @@
 	- Datalink; layer 2 (Error checking and frame synchronisation).
 	- Physical; layer 1 (Bits over fibre).	
 
-
-# OSI Layers Overview
-
-## **Layer 7 - Application**
+**Layer 7 - Application**
 - Where users/apps interact with the network
 - **Examples**: Browser using HTTP/HTTPS, email client using SMTP, DNS queries
 - **Data format**: Messages/requests
 
----
-
-## **Layer 4 - Transport**
+**Layer 4 - Transport**
 - Manages data delivery between applications
 - **TCP**: Reliable, ordered (web browsing, file transfers)
 - **UDP**: Fast, no guarantees (video streaming, gaming)
 - **Uses ports**: 443 for HTTPS, 53 for DNS
 - **Data format**: Segments (TCP) or Datagrams (UDP)
 
----
-
-## **Layer 3 - Network**
+**Layer 3 - Network**
 - Routes data between different networks
 - **IP addresses** identify devices (e.g., 192.168.1.1)
 - **Routers** operate here
 - **Example**: Packet traveling from your home to Google's servers
 - **Data format**: Packets
 
----
-
-## **Layer 2 - Datalink**
+**Layer 2 - Datalink**
 - Communication on the same local network
 - **MAC addresses** (physical addresses)
 - **Switches** operate here
@@ -43,17 +34,13 @@
 - **Error detection** via checksums
 - **Data format**: Frames
 
----
-
-## **Layer 1 - Physical**
+**Layer 1 - Physical**
 - Actual transmission medium
 - **Signals**: Electrical, light pulses, radio waves
 - **Medium**: Cables, fiber, WiFi frequencies
 - **Example**: Ethernet cable, fiber optic line
 
----
-
-### **Flow Example**
+**Flow Example**
 You visit google.com:
 - DNS query (**Layer 7**)
 - TCP connection (**Layer 4**)
@@ -61,6 +48,7 @@ You visit google.com:
 - Ethernet frame to router (**Layer 2**)
 - Electrical signals on cable (**Layer 1**)
 
+---
 
 - Firewalls
 	- Rules to prevent incoming and outgoing connections.	
