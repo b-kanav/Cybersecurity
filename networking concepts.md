@@ -1,7 +1,5 @@
 # Networking 
 
----
-
 ## OSI Model
 	- Application; layer 7 (and basically layers 5 & 6) (includes API, HTTP, etc).
 	- Transport; layer 4 (TCP/UDP).
@@ -188,7 +186,7 @@ You don't care what's inside the envelope — the message **IS the address**.
 
 ---
 
-- DNS configs
+## DNS configs
 	- Start of Authority (SOA).
 	- IP addresses (A and AAAA).
 	- SMTP mail exchangers (MX).
@@ -196,6 +194,68 @@ You don't care what's inside the envelope — the message **IS the address**.
 	- Pointers for reverse DNS lookups (PTR).
 	- Domain name aliases (CNAME).
 
+
+# DNS Record Types
+
+**SOA (Start of Authority)**
+Metadata about the domain — who’s responsible, refresh intervals.
+```
+example.com SOA ns1.example.com admin.example.com
+Serial: 2024120201
+Refresh: 3600 (check for updates every hour)
+```
+
+**A Record (IPv4)**
+Domain → IPv4 address.
+```
+google.com → 142.250.185.46
+mail.company.com → 203.0.113.10
+```
+
+**AAAA Record (IPv6)**
+Domain → IPv6 address.
+```
+google.com → 2607:f8b0:4004:c07::71
+```
+
+**MX (Mail Exchanger)**
+Where to send emails for this domain.
+```
+company.com MX priority=10 mail.company.com
+If you email user@company.com, goes to mail.company.com
+```
+
+**NS (Name Server)**
+Which DNS servers handle this domain.
+```
+example.com NS ns1.cloudflare.com
+example.com NS ns2.cloudflare.com
+```
+
+**PTR (Pointer - Reverse DNS)**
+IP → Domain name.
+```
+208.80.152.2 → 2.152.80.208.in-addr.arpa → wikipedia.org
+Used for email verification
+```
+
+**CNAME (Alias)**
+Point one domain to another.
+```
+www.example.com CNAME example.com
+blog.example.com CNAME hosting-provider.com
+Both redirect to target domain
+```
+
+**Real Setup Example**
+```
+example.com A 203.0.113.50
+www.example.com CNAME example.com
+mail.example.com A 203.0.113.51
+example.com MX 10 mail.example.com
+```
+
+---
 
 - ARP
 	- Pair MAC address with IP Address for IP connections. 
