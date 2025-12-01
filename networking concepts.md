@@ -1,6 +1,8 @@
 # Networking 
 
-- OSI Model
+---
+
+## OSI Model
 	- Application; layer 7 (and basically layers 5 & 6) (includes API, HTTP, etc).
 	- Transport; layer 4 (TCP/UDP).
 	- Network; layer 3 (Routing).
@@ -50,7 +52,7 @@ You visit google.com:
 
 ---
 
-- Firewalls
+## Firewalls
 	- Rules to prevent incoming and outgoing connections.	
 
 **Basic Concept**
@@ -90,13 +92,13 @@ Employee tries to SSH to server (192.168.1.100):
 
 ---
 
-### NAT 
+## NAT 
 	- Useful to understand IPv4 vs IPv6.
   - IPv4 address conservation is called NAT, IPv6 does not require NAT, 340 undec 
 
 ---
 
-- DNS
+## DNS
 	- (53)
 	- Requests to DNS are usually UDP, unless the server gives a redirect notice asking for a TCP connection. Look up in cache happens first. DNS exfiltration. Using raw IP addresses means no DNS logs, but there are HTTP logs. DNS sinkholes.
 	- In a reverse DNS lookup, PTR might contain- 2.152.80.208.in-addr.arpa, which will map to  208.80.152.2. DNS lookups start at the end of the string and work backwards, which is why the IP address is backwards in PTR.
