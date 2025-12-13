@@ -206,6 +206,7 @@ Refresh: 3600 (check for updates every hour)
 ```
 
 **A Record (IPv4)**
+Fullform - Address Record
 Domain → IPv4 address.
 ```
 google.com → 142.250.185.46
@@ -236,10 +237,20 @@ example.com NS ns2.cloudflare.com
 IP → Domain name.
 ```
 208.80.152.2 → 2.152.80.208.in-addr.arpa → wikipedia.org
-Used for email verification
+
+Email Security: Receiving mail servers check PTR records to ensure the sending IP matches the domain name, flagging emails from misconfigured servers as potential spam.
+Authentication: Helps prevent fraudulent emails by verifying the origin of messages.
+Troubleshooting: Aids network administrators in identifying hosts and tracing connections.
+Setup: Created by your IP address provider (often your hosting company) in the reverse DNS zone, requiring a corresponding A record for the IP first.
+
+in-addr.arpa Explained
+What it is: A special, reserved Top-Level Domain (TLD) in the DNS hierarchy used specifically for reverse lookups of IPv4 addresses.
+Origin: Comes from ARPA (Advanced Research Projects Agency), an early precursor to the Internet.
+Management: Not directly managed by users; IP blocks are delegated to ISPs or organizations, who then manage their respective in-addr.arpa subdomains 
 ```
 
 **CNAME (Alias)**
+Canonical Domain
 Point one domain to another.
 ```
 www.example.com CNAME example.com
@@ -258,7 +269,44 @@ example.com MX 10 mail.example.com
 ---
 
 - ARP
-	- Pair MAC address with IP Address for IP connections. 
+	- Pair MAC address with IP Address for IP connections.
+
+
+### ARP (Address Resolution Protocol)
+
+#### Basic Concept
+- ARP finds the **MAC address** when you only know the **IP address**.
+- Required because **Layer 2 (Ethernet)** uses MAC addresses, not IPs.
+
+#### How It Works
+Your PC (`192.168.1.10`) wants to talk to the Router (`192.168.1.1`), but Ethernet needs the **MAC address** to send the frame.
+1. **PC broadcasts:** Who has 192.168.1.1? Tell 192.168.1.10
+2. **Router responds:** 192.168.1.1 is at MAC aa:bb:cc:dd:ee:ff
+3. **PC caches** this mapping (ARP cache/table)
+4. **PC sends data** using that MAC address
+
+#### Example
+ARP Request (broadcast to everyone):
+Who has IP 192.168.1.50?
+
+Device at 192.168.1.50 replies:
+I'm 192.168.1.50, my MAC is 00:1A:2B:3C:4D:5E
+
+Now you can send Ethernet frames to 00:1A:2B:3C:4D:5E.
+
+#### ARP Cache (stored mappings)
+192.168.1.1   → aa:bb:cc:dd:ee:ff   (Router)
+192.168.1.50  → 00:1A:2B:3C:4D:5E   (Laptop)
+
+#### Security Issue – ARP Spoofing
+- Attacker sends fake ARP reply:
+192.168.1.1 is at ATTACKER-MAC
+- Your PC updates cache → sends traffic to attacker instead of router  
+**Result:** Man-in-the-middle attack**Result:** Man-in-the-middle attack.
+
+#### View ARP Cache
+
+---
 
 
 - DHCP
@@ -266,8 +314,88 @@ example.com MX 10 mail.example.com
 	- Dynamic address allocation (allocated by router).
 	- `DHCPDISCOVER` -> `DHCPOFFER` -> `DHCPREQUEST` -> `DHCPACK`
 
+
+### DHCP (Dynamic Host Configuration Protocol)
+
+#### Basic Concept
+- Automatically assigns IP addresses to devices on a network.
+- No manual configuration needed.
+
+#### 4-Step Process (DORA)
+1. **DHCPDISCOVER (Client broadcasts):**
+   - New laptop connects to WiFi
+   - Broadcasts: "I need an IP address! Any DHCP server here?"
+
+2. **DHCPOFFER (Server responds):**
+   - DHCP server: "I can offer you 192.168.1.100
+     Also: subnet mask 255.255.255.0, gateway 192.168.1.1, DNS 8.8.8.8"
+
+3. **DHCPREQUEST (Client accepts):**
+   - Laptop broadcasts: "I accept 192.168.1.100 from this server"
+   - (Broadcast so other servers know)
+
+4. **DHCPACK (Server confirms):**
+   - Server: "Confirmed! 192.168.1.100 is yours for 24 hours (lease time)"
+
+#### What You Get
+- IP address: 192.168.1.100
+- Subnet mask: 255.255.255.0
+- Default gateway: 192.168.1.1
+- DNS servers: 8.8.8.8, 8.8.4.4
+- Lease duration: 24 hours
+
+#### Real Example
+- Phone joins home WiFi
+- DISCOVER → Router offers 192.168.0.50
+- REQUEST → Router confirms
+- Phone now has working internet config automatically
+
+#### Ports
+- Server listens on **67**, Client on **68** (both UDP)
+
+######## Security Risk
+Rogue DHCP server can give malicious DNS/gateway
+
+
+---
+
 - Multiplex 
 	- Timeshare, statistical share, just useful to know it exists.
+
+
+### Multiplexing
+
+#### Basic Concept
+- Multiple signals/data streams share one physical medium.
+- Saves resources and improves efficiency.
+
+#### Types
+
+##### Time-Division Multiplexing (TDM)
+- Each stream gets a time slot.
+- Example pattern:
+  - Stream A: [uses line] [waits] [uses line] [waits]
+  - Stream B: [waits] [uses line] [waits] [uses line]
+  - Stream C: [waits] [waits] [uses line] [waits]
+- Like 3 people sharing one phone line, taking turns.
+
+##### Statistical Multiplexing
+- Bandwidth allocated on-demand (not fixed slots).
+- Example:
+  - Stream A needs data: gets 60% now.
+  - Stream B idle: gets 0%.
+  - Stream C needs data: gets 40%.
+- Next moment allocations change based on need.
+- Used in: Internet traffic, packet switching.
+
+#### Example
+Single fiber optic cable carries:
+- 100 phone calls (TDM - each gets 1ms every 100ms).
+- Internet traffic (Statistical - bandwidth shared dynamically).
+
+#### Why It Matters
+- Efficient use of expensive infrastructure (cables, bandwidth
+
 
 - Traceroute 
 	- Usually uses UDP, but might also use ICMP Echo Request or TCP SYN. TTL, or hop-limit.
