@@ -396,10 +396,60 @@ Single fiber optic cable carries:
 #### Why It Matters
 - Efficient use of expensive infrastructure (cables, bandwidth
 
+---
 
 - Traceroute 
 	- Usually uses UDP, but might also use ICMP Echo Request or TCP SYN. TTL, or hop-limit.
 	- Initial hop-limit is 128 for windows and 64 for *nix. Destination returns ICMP Echo Reply. 
+
+
+### Traceroute
+
+#### Basic Concept
+- Maps the path packets take to reach a destination.
+- Shows every router (hop) along the way.
+
+#### How It Works – TTL Trick
+- TTL (Time To Live) = hop counter.
+- Each router decrements TTL by 1.
+- When TTL hits 0 → router sends back "ICMP Time Exceeded" with its IP.
+
+#### Process
+1. Send packet with TTL=1  
+   → First router decrements to 0 → replies "Time Exceeded"  
+   → Now you know first hop IP.
+
+2. Send packet with TTL=2  
+   → First router (TTL=1), second router (TTL=0) → replies  
+   → Now you know second hop IP.
+
+3. Send packet with TTL=3  
+   → Third router replies.
+
+- Continue until reaching destination.
+
+#### Example
+Command: traceroute google.com  
+Output:  
+1. 192.168.1.1 (2ms)     - Your router  
+2. 10.0.0.1 (5ms)        - ISP router  
+3. 72.14.215.85 (15ms)   - ISP backbone  
+4. 142.250.185.46 (20ms) - Google server (sends ICMP Echo Reply)
+
+#### Protocols Used
+- Linux: UDP to high ports (33434+).
+- Windows: ICMP Echo Request.
+- Alternative: TCP SYN (bypasses some firewalls).
+
+#### Initial TTL Values
+- Windows: 128.
+- Linux/Unix: 64.
+- Decrements each hop.
+
+#### Security Use
+-- Map network topology.
+
+---
 
 - Nmap 
 	- Network scanning tool.
